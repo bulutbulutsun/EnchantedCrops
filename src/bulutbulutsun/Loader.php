@@ -6,11 +6,13 @@ use bulutbulutsun\listener\EventListener;
 use bulutbulutsun\task\GrowTask;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\BlockTypeTags;
+use pocketmine\block\CocoaBlock;
 use pocketmine\block\Crops;
 use pocketmine\block\MelonStem;
 use pocketmine\block\NetherWartPlant;
 use pocketmine\block\PumpkinStem;
 use pocketmine\block\Stem;
+use pocketmine\block\SweetBerryBush;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\math\Facing;
@@ -120,6 +122,16 @@ class Loader extends PluginBase{
                     BlockEventHelper::grow($crop, $newcrop, null);
                 }
             }
+            if ($crop instanceof SweetBerryBush){
+                if ($crop->getAge() < SweetBerryBush::MAX_AGE) {
+                    $tempAge = $crop->getAge() + mt_rand(2, 5);
+                    if ($tempAge > SweetBerryBush::MAX_AGE) {
+                        $tempAge = SweetBerryBush::MAX_AGE;
+                    }
+                    $newcrop = $crop->setAge($tempAge);
+                    BlockEventHelper::grow($crop, $newcrop, null);
+                }
+            }
             if ($crop instanceof PumpkinStem) {
                 if ($crop->getAge() >= PumpkinStem::MAX_AGE) {
                     $grow = VanillaBlocks::PUMPKIN();
@@ -152,6 +164,16 @@ class Loader extends PluginBase{
                             $crop->getPosition()->getWorld()->setBlock($crop->getPosition(), $crop->setFacing($facing));
                         }
                     }
+                }
+            }
+            if ($crop instanceof CocoaBlock) {
+                if ($crop->getAge() < CocoaBlock::MAX_AGE) {
+                    $tempAge = $crop->getAge() + mt_rand(2, 5);
+                    if ($tempAge > CocoaBlock::MAX_AGE) {
+                        $tempAge = CocoaBlock::MAX_AGE;
+                    }
+                    $newcrop = $crop->setAge($tempAge);
+                    BlockEventHelper::grow($crop, $newcrop, null);
                 }
             }
         }
