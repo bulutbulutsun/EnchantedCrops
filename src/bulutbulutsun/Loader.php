@@ -6,16 +6,17 @@ use bulutbulutsun\listener\EventListener;
 use bulutbulutsun\task\GrowTask;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\BlockTypeTags;
+use pocketmine\block\Cactus;
 use pocketmine\block\CocoaBlock;
 use pocketmine\block\Crops;
 use pocketmine\block\MelonStem;
 use pocketmine\block\NetherWartPlant;
 use pocketmine\block\PumpkinStem;
-use pocketmine\block\Stem;
 use pocketmine\block\SweetBerryBush;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\ClosureTask;
 use pocketmine\world\World;
@@ -133,6 +134,19 @@ class Loader extends PluginBase{
                     }
                     $newcrop = $crop->setAge($tempAge);
                     BlockEventHelper::grow($crop, $newcrop, null);
+                }
+            }
+            if ($crop instanceof Cactus) {
+                if ($crop->getAge() < 3) {
+                    $tempAge = $crop->getAge() + 1;
+                    if ($tempAge > Cactus::MAX_AGE) {
+                        $tempAge = Cactus::MAX_AGE;
+                    }
+                    $newcrop = $crop->setAge($tempAge);
+                    if ($world->getBlockAt($x, $y + $crop->getAge() - 1, $z)->getTypeId() == VanillaBlocks::AIR()->getTypeId()) {
+                        return;
+                    }
+                    $world->setBlock(new Vector3($x, $y + $crop->getAge(), $z), $newcrop, true);
                 }
             }
             if ($crop instanceof NetherWartPlant){

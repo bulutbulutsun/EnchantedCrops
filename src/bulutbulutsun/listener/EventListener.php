@@ -106,8 +106,15 @@ class EventListener implements Listener
         $block = $event->getBlockAgainst();
         $position = $block->getPosition();
         $nether_wart = ItemIdentifier::fromBlock(VanillaBlocks::NETHER_WART());
+        $cactus = ItemIdentifier::fromBlock(VanillaBlocks::CACTUS());
         if ($item instanceof SweetBerries or $item instanceof WheatSeeds or $item instanceof PumpkinSeeds or $item instanceof MelonSeeds or $item instanceof Potato or $item instanceof Carrot or $item instanceof BeetrootSeeds or $item->getTypeId() == $nether_wart->getTypeId()) {
             Loader::getInstance()->setCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
+        }
+        if ($block instanceof Sand){
+            if ($item->getTypeId() == $cactus->getTypeId()){
+                Loader::getInstance()->setCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
+                var_dump("cactus");
+            }
         }
     }
 
