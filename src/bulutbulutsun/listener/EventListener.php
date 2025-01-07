@@ -12,9 +12,11 @@ use pocketmine\block\NetherWartPlant;
 use pocketmine\block\SoulSand;
 use pocketmine\block\SweetBerryBush;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\entity\object\PrimedTNT;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\BlockSpreadEvent;
+use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\event\entity\EntityTrampleFarmlandEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerInteractEvent;
@@ -51,13 +53,30 @@ class EventListener implements Listener
             Loader::getInstance()->deleteCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY(), $position->getZ());
         }
     }
+    public function explosion(EntityExplodeEvent $event)
+    {
+        $blocks = $event->getBlockList();
+        $entity = $event->getEntity();
+        if ($entity instanceof PrimedTNT) {
+            foreach ($blocks as $block) {
+                if ($block instanceof Crops || $block instanceof NetherWartPlant || $block instanceof CocoaBlock || $block instanceof SweetBerryBush) {
+                    $position = $block->getPosition();
+                    //For data in the database
+                    Loader::getInstance()->deleteData($position->getWorld()->getFolderName(), $position->getX(), $position->getY(), $position->getZ());
+                    //For data in the cache
+                    Loader::getInstance()->deleteCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY(), $position->getZ());
+                }
+            }
+
+        }
+    }
 
     public function onTrample(EntityTrampleFarmlandEvent $event)
     {
         $block = $event->getBlock();
         $position = $block->getPosition();
         $crops = new Position($position->getX(), $position->getY() + 1, $position->getZ(), $position->getWorld());
-        if ($position->getWorld()->getBlock($crops) instanceof Crops || $position->getWorld()->getBlock($crops) instanceof NetherWartPlant) {
+        if ($position->getWorld()->getBlock($crops) instanceof Crops || $position->getWorld()->getBlock($crops) instanceof NetherWartPlant || $block instanceof SweetBerryBush) {
             //For data in the database
             Loader::getInstance()->deleteData($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
             //For data in the cache
