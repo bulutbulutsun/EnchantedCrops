@@ -29,6 +29,8 @@ class Loader extends PluginBase{
     /** @var Loader|null */
     private static $instance;
 
+    public $datacache = [];
+
     public static function getInstance(): ?Loader{
         return self::$instance;
     }
@@ -45,15 +47,35 @@ class Loader extends PluginBase{
     }
     protected function onDisable(): void
     {
+        //When the server is closed, the data in the cache is saved to the database
+        foreach (Loader::getInstance()->datacache as $coord) {
+            $this->setData($coord['world'], $coord['x'], $coord['y'], $coord['z']);
+        }
         $this->getServer()->getLogger()->info("Plugin disabled!");
     }
     private function initDatabase(): void {
         $this->database = libasynql::create($this, $this->getConfig()->get("database"), [
-            "mysql" => "mysql.sql"
+            "mysql" => "mysql.sql",
+            "sqlite" => "sqlite.sql"
         ]);
         $this->database->executeGeneric('table.create', [], null, function($error) {
             $this->getLogger()->error("Failed to create table: " . $error->getMessage());
         });
+    }
+    public function setCache($world, $x, $y, $z) {
+        $this->datacache[] = ["world" => $world, "x" => $x, "y" => $y, "z" => $z];
+    }
+    public function deleteCache($world,$x,$y,$z) {
+        foreach ($this->datacache as $key => $coord) {
+            if ($coord["world"] === $world && $coord["x"] === $x && $coord["y"] === $y && $coord["z"] === $z) {
+                unset($this->datacache[$key]);
+                $this->datacache = array_values($this->datacache);
+                break;
+            }
+        }
+    }
+    public function getCache() {
+        return $this->datacache;
     }
     public function setData($world,$x,$y,$z)
     {
@@ -66,6 +88,7 @@ class Loader extends PluginBase{
             $this->getLogger()->error("Failed to insert data: " . $error->getMessage());
         });
     }
+
     public function deleteData($world,$x,$y,$z)
     {
         $this->database->executeChange('table.deletedata', [

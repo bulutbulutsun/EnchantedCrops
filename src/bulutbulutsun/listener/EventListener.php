@@ -39,10 +39,16 @@ class EventListener implements Listener
         $block = $event->getBlock();
         $position = $block->getPosition();
         if ($block instanceof Farmland || $block instanceof SoulSand || $block instanceof Grass || $block instanceof Dirt) {
+            //For data in the database
             Loader::getInstance()->deleteData($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
+            //For data in the cache
+            Loader::getInstance()->deleteCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
         }
         if ($block instanceof Crops || $block instanceof NetherWartPlant || $block instanceof CocoaBlock || $block instanceof SweetBerryBush) {
+            //For data in the database
             Loader::getInstance()->deleteData($position->getWorld()->getFolderName(), $position->getX(), $position->getY(), $position->getZ());
+            //For data in the cache
+            Loader::getInstance()->deleteCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY(), $position->getZ());
         }
     }
 
@@ -52,7 +58,10 @@ class EventListener implements Listener
         $position = $block->getPosition();
         $crops = new Position($position->getX(), $position->getY() + 1, $position->getZ(), $position->getWorld());
         if ($position->getWorld()->getBlock($crops) instanceof Crops || $position->getWorld()->getBlock($crops) instanceof NetherWartPlant) {
+            //For data in the database
             Loader::getInstance()->deleteData($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
+            //For data in the cache
+            Loader::getInstance()->deleteCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
         }
     }
 
@@ -62,7 +71,10 @@ class EventListener implements Listener
         foreach ($blocks as $block) {
             if ($block instanceof Crops || $block instanceof NetherWartPlant || $block instanceof CocoaBeans | $block instanceof SweetBerryBush) {
                 $position = $block->getPosition();
+                //For data in the database
                 Loader::getInstance()->deleteData($position->getWorld()->getFolderName(), $position->getX(), $position->getY(), $position->getZ());
+                //For data in the cache
+                Loader::getInstance()->deleteCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY(), $position->getZ());
             }
         }
     }
@@ -74,7 +86,7 @@ class EventListener implements Listener
         $position = $block->getPosition();
         $nether_wart = ItemIdentifier::fromBlock(VanillaBlocks::NETHER_WART());
         if ($item->getTypeId() == $nether_wart->getTypeId() or $item instanceof SweetBerries or $item instanceof WheatSeeds or $item instanceof PumpkinSeeds or $item instanceof MelonSeeds or $item instanceof Potato or $item instanceof Carrot or $item instanceof BeetrootSeeds) {
-            Loader::getInstance()->setData($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
+            Loader::getInstance()->setCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
         }
     }
 
@@ -85,7 +97,7 @@ class EventListener implements Listener
         if ($item instanceof CocoaBeans) {
             if ($event->getAction() == PlayerInteractEvent::RIGHT_CLICK_BLOCK) {
                 $position = $block->getSide($event->getFace())->getPosition();
-                Loader::getInstance()->setData($position->getWorld()->getFolderName(), $position->getX(), $position->getY(), $position->getZ());
+                Loader::getInstance()->setCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY(), $position->getZ());
             }
         }
     }
