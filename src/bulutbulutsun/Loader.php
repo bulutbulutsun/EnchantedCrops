@@ -12,6 +12,7 @@ use pocketmine\block\Crops;
 use pocketmine\block\MelonStem;
 use pocketmine\block\NetherWartPlant;
 use pocketmine\block\PumpkinStem;
+use pocketmine\block\Sugarcane;
 use pocketmine\block\SweetBerryBush;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\VanillaBlocks;
@@ -141,6 +142,19 @@ class Loader extends PluginBase{
                     $tempAge = $crop->getAge() + 1;
                     if ($tempAge > Cactus::MAX_AGE) {
                         $tempAge = Cactus::MAX_AGE;
+                    }
+                    $newcrop = $crop->setAge($tempAge);
+                    if ($world->getBlockAt($x, $y + $crop->getAge() - 1, $z)->getTypeId() == VanillaBlocks::AIR()->getTypeId()) {
+                        return;
+                    }
+                    $world->setBlock(new Vector3($x, $y + $crop->getAge(), $z), $newcrop, true);
+                }
+            }
+            if ($crop instanceof Sugarcane) {
+                if ($crop->getAge() < 3) {
+                    $tempAge = $crop->getAge() + 1;
+                    if ($tempAge > Sugarcane::MAX_AGE) {
+                        $tempAge = Sugarcane::MAX_AGE;
                     }
                     $newcrop = $crop->setAge($tempAge);
                     if ($world->getBlockAt($x, $y + $crop->getAge() - 1, $z)->getTypeId() == VanillaBlocks::AIR()->getTypeId()) {

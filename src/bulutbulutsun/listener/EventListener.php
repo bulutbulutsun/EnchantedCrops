@@ -12,6 +12,7 @@ use pocketmine\block\Grass;
 use pocketmine\block\NetherWartPlant;
 use pocketmine\block\Sand;
 use pocketmine\block\SoulSand;
+use pocketmine\block\Sugarcane;
 use pocketmine\block\SweetBerryBush;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\object\PrimedTNT;
@@ -48,7 +49,7 @@ class EventListener implements Listener
             //For data in the cache
             Loader::getInstance()->deleteCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
         }
-        if ($block instanceof Crops || $block instanceof NetherWartPlant || $block instanceof CocoaBlock || $block instanceof SweetBerryBush || $block instanceof Cactus) {
+        if ($block instanceof Crops || $block instanceof NetherWartPlant || $block instanceof CocoaBlock || $block instanceof SweetBerryBush || $block instanceof Cactus || $block instanceof Sugarcane) {
             //For data in the database
             Loader::getInstance()->deleteData($position->getWorld()->getFolderName(), $position->getX(), $position->getY(), $position->getZ());
             //For data in the cache
@@ -61,7 +62,7 @@ class EventListener implements Listener
         $entity = $event->getEntity();
         if ($entity instanceof PrimedTNT) {
             foreach ($blocks as $block) {
-                if ($block instanceof Crops || $block instanceof NetherWartPlant || $block instanceof CocoaBlock || $block instanceof SweetBerryBush || $block instanceof Cactus) {
+                if ($block instanceof Crops || $block instanceof NetherWartPlant || $block instanceof CocoaBlock || $block instanceof SweetBerryBush || $block instanceof Cactus || $block instanceof Sugarcane) {
                     $position = $block->getPosition();
                     //For data in the database
                     Loader::getInstance()->deleteData($position->getWorld()->getFolderName(), $position->getX(), $position->getY(), $position->getZ());
@@ -78,7 +79,7 @@ class EventListener implements Listener
         $block = $event->getBlock();
         $position = $block->getPosition();
         $crops = new Position($position->getX(), $position->getY() + 1, $position->getZ(), $position->getWorld());
-        if ($position->getWorld()->getBlock($crops) instanceof Crops || $position->getWorld()->getBlock($crops) instanceof NetherWartPlant || $block instanceof SweetBerryBush || $block instanceof Cactus) {
+        if ($position->getWorld()->getBlock($crops) instanceof Crops || $position->getWorld()->getBlock($crops) instanceof NetherWartPlant || $block instanceof SweetBerryBush || $block instanceof Cactus || $block instanceof Sugarcane) {
             //For data in the database
             Loader::getInstance()->deleteData($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
             //For data in the cache
@@ -90,7 +91,7 @@ class EventListener implements Listener
     {
         $blocks = $event->getBlock()->getAffectedBlocks();
         foreach ($blocks as $block) {
-            if ($block instanceof Crops || $block instanceof NetherWartPlant || $block instanceof CocoaBeans || $block instanceof SweetBerryBush || $block instanceof Cactus) {
+            if ($block instanceof Crops || $block instanceof NetherWartPlant || $block instanceof CocoaBeans || $block instanceof SweetBerryBush || $block instanceof Cactus || $block instanceof Sugarcane) {
                 $position = $block->getPosition();
                 //For data in the database
                 Loader::getInstance()->deleteData($position->getWorld()->getFolderName(), $position->getX(), $position->getY(), $position->getZ());
@@ -107,11 +108,17 @@ class EventListener implements Listener
         $position = $block->getPosition();
         $nether_wart = ItemIdentifier::fromBlock(VanillaBlocks::NETHER_WART());
         $cactus = ItemIdentifier::fromBlock(VanillaBlocks::CACTUS());
+        $sugar_cane = ItemIdentifier::fromBlock(VanillaBlocks::SUGARCANE());
         if ($item instanceof SweetBerries or $item instanceof WheatSeeds or $item instanceof PumpkinSeeds or $item instanceof MelonSeeds or $item instanceof Potato or $item instanceof Carrot or $item instanceof BeetrootSeeds or $item->getTypeId() == $nether_wart->getTypeId()) {
             Loader::getInstance()->setCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
         }
         if ($block instanceof Sand){ //To exclude a cactus from data added above a cactus
             if ($item->getTypeId() == $cactus->getTypeId()){
+                Loader::getInstance()->setCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
+            }
+        }
+        if ($block instanceof Sand || $block instanceof Grass || $block instanceof Dirt){ //To exclude a cane from data added above a cane
+            if ($item->getTypeId() == $sugar_cane->getTypeId()){
                 Loader::getInstance()->setCache($position->getWorld()->getFolderName(), $position->getX(), $position->getY() + 1, $position->getZ());
             }
         }
